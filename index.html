@@ -85,6 +85,7 @@
         }
 
         .fab-edit {
+            display: none !important;
             background: var(--primary-gradient);
         }
 
@@ -1704,7 +1705,9 @@ Example:
         document.addEventListener('DOMContentLoaded', function() {
             initializeProjects();
             initializeAnimations();
-            showNotification('Welcome! Your modern resume is ready. Click the edit button to customize.');
+            if (!isProduction) {
+                showNotification('Welcome! Your modern resume is ready. Click the edit button to customize.');
+            }
         });
 
         // Initialize default projects
@@ -2134,18 +2137,22 @@ Example:
 
         // Production environment checks
         const isProduction = location.hostname === "ajayanalytics.github.io";
-
-        // Hide edit button and block edit mode in production
         if (isProduction) {
-            document.addEventListener('DOMContentLoaded', function() {
-                const editBtn = document.querySelector('.fab-edit');
-                if (editBtn) editBtn.style.display = 'none';
-            });
+            // Hide edit button immediately
+            const style = document.createElement('style');
+            style.innerHTML = '.fab-edit { display: none !important; }';
+            document.head.appendChild(style);
 
             // Prevent edit mode activation
             window.toggleEditMode = function() {};
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'e') e.preventDefault();
+            });
+
+            // Prevent editMode variable from being set to true
+            Object.defineProperty(window, 'editMode', {
+                get: function() { return false; },
+                set: function() {}
             });
         }
 
@@ -2229,7 +2236,7 @@ Example:
                             });
                         }
                     });
-                }
+                               }
             });
         });
 
