@@ -2132,23 +2132,6 @@ Example:
             closeProjectModal();
         });
 
-        // Production environment checks
-        const isProduction = location.hostname === "ajayanalytics.github.io";
-
-        // Hide edit button and block edit mode in production
-        if (isProduction) {
-            document.addEventListener('DOMContentLoaded', function() {
-                const editBtn = document.querySelector('.fab-edit');
-                if (editBtn) editBtn.style.display = 'none';
-            });
-
-            // Prevent edit mode activation
-            window.toggleEditMode = function() {};
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 'e') e.preventDefault();
-            });
-        }
-
         // Utility functions
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
