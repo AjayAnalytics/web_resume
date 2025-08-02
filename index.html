@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajay Kumar - Power BI Developer | Business Intelligence Specialist</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f8ca5e 0%, #f27121 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            --light-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            --purple-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --blue-gradient: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            --green-gradient: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --text-muted: #a0aec0;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            border-radius: 24px;
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+            box-shadow: var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .fab-edit {
+            background: var(--primary-gradient);
+        }
+
+        .fab-print {
+            background: var(--secondary-gradient);
+        }
+
+        .fab-download {
+            background: var(--accent-gradient);
+        }
+
+        /* Edit Mode Styles */
+        .edit-mode .editable {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-mode .editable:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            outline: 2px dashed #667eea;
+            outline-offset: 4px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--white);
+            margin: 2% auto;
+            padding: 40px;
+            border-radius: 24px;
+            width: 95%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #f5576c;
+        }
+
+        .modal h2 {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-right: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--dark-gradient);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        /* Image Upload Styles */
+        .image-upload-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .image-preview {
+            width: 200px;
+            height: 200px;
+            border: 3px dashed #e2e8f0;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-light);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-preview:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .image-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .image-placeholder i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .image-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--secondary-gradient);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .image-preview:hover .image-remove {
+            display: flex;
+        }
+
+        .image-remove:hover {
+            transform: scale(1.1);
+        }
+
+        /* Header Section */
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 4rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="25" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+        .profile-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .profile-img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            border: 6px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .profile-img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-upload {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .edit-mode .profile-upload {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-upload:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .title {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255,255,255,0.15);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .contact-item:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-item i {
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2.5fr;
+            gap: 0;
+            min-height: 800px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 3rem 2rem;
+            border-right: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-gradient);
+            opacity: 0.3;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section h2 {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid transparent;
+            border-image: var(--accent-gradient) 1;
+            position: relative;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section h2 i {
+            margin-right: 10px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Skills */
+        .skill-category {
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .skill-category:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left-color: #667eea;
+        }
+
+        .skill-category h3 {
+            color: var(--text-dark);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .skill-tag {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .skill-tag:hover::before {
+            left: 100%;
+        }
+
+        .skill-tag:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .skill-tag:nth-child(even) {
+            background: var(--accent-gradient);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .skill-tag:nth-child(3n) {
+            background: var(--success-gradient);
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+        }
+
+        /* Education */
+        .education-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .education-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--warning-gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .education-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .education-item:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transform: translateX(8px);
+        }
+
+        .education-item h4 {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .education-item .institution {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .education-item .year {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 3rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            position: relative;
+        }
+
+        /* Executive Summary */
+        .summary {
+            background: var(--blue-gradient);
+            padding: 3rem;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="0,0 100,0 80,100 0,100" fill="rgba(255,255,255,0.1)"/></svg>');
+        }
+
+        .summary p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+            position: relative;
+            z-index: 1;
+            text-align: justify;
+        }
+
+        /* Experience */
+        .experience-item {
+            background: white;
+            border: 2px solid #f1f5f9;
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+        }
+
+        .experience-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--primary-gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .experience-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .experience-item:hover {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+            border-color: #e2e8f0;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .job-title {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .company {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .duration {
+            color: white;
+            font-size: 1rem;
+            background: var(--accent-gradient);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            white-space: nowrap;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .achievements {
+            list-style: none;
+        }
+
+        .achievements li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .achievements li::before {
+            content: '⚡';
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Key Achievements Section */
+        .key-achievements {
+            background: var(--purple-gradient);
+            padding: 3rem;
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .achievement-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--success-gradient);
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .achievement-card h4 {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .achievement-card p {
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Project Section */
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .add-project-btn {
+            background: var(--success-gradient);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
+        }
+
+        .edit-mode .add-project-btn {
+            display: block;
+        }
+
+        .add-project-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(17, 153, 142, 0.4);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .project-card {
+            background: white;
+            border: 2px solid #f1f5f9;
+            border-radius: 24px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--secondary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .project-card:hover {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            border-color: #e2e8f0;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-card h4 {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .project-image {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-light);
+            border: 2px dashed #e2e8f0;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .project-image.has-image {
+            border: none;
+            background: transparent;
+        }
+
+        .project-image:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .project-image.has-image:hover {
+            background: transparent;
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .project-image-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .project-image-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .project-image-upload-btn {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .edit-mode .project-image-upload-btn {
+            display: flex;
+        }
+
+        .project-image-upload-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .project-image-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .project-image-container.no-image {
+            display: none;
+        }
+
+        .edit-mode .project-image-container.no-image {
+            display: block;
+        }
+
+        .project-image-container.no-image .project-image {
+            height: auto;
+            min-height: 60px;
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+        .project-upload-icon {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .edit-mode .project-upload-icon {
+            display: flex;
+        }
+
+        .project-upload-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .project-card ul {
+            list-style: none;
+        }
+
+        .project-card li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .project-card li::before {
+            content: '●';
+            position: absolute;
+            left: 0;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .project-actions {
+            display: none;
+            gap: 10px;
+        }
+
+        .edit-mode .project-actions {
+            display: flex;
+        }
+
+        .project-actions button {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .edit-project {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .delete-project {
+            color: #f5576c;
+            background: rgba(245, 87, 108, 0.1);
+        }
+
+        .project-actions button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success-gradient);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            z-index: 3000;
+            display: none;
+            box-shadow: 0 8px 30px rgba(17, 153, 142, 0.4);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .notification.error {
+            background: var(--secondary-gradient);
+            box-shadow: 0 8px 30px rgba(245, 87, 108, 0.4);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -30px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .project-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+
+            .achievement-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 16px;
+            }
+
+            .fab-container {
+                top: 10px;
+                right: 10px;
+            }
+
+            .fab {
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+
+            .header {
+                padding: 3rem 2rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .header .title {
+                font-size: 1.4rem;
+            }
+
+            .contact-info {
+                gap: 1rem;
+            }
+
+            .contact-item {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .profile-img {
+                width: 150px;
+                height: 150px;
+                font-size: 4rem;
+            }
+
+            .content, .sidebar {
+                padding: 2rem 1.5rem;
+            }
+
+            .job-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                padding: 30px 20px;
+                width: 95%;
+            }
+
+            .summary, .key-achievements {
+                padding: 2rem;
+            }
+
+            .summary p {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .fab-container, .project-actions, .profile-upload, .add-project-btn {
+                display: none !important;
+            }
+            
+            .container {
+                box-shadow: none;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+
+            .experience-item, .project-card, .achievement-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr 2fr;
+            }
+
+            body {
+                background: white;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s infinite;
+        }
+
+        /* Scroll Animation */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <button class="fab fab-edit" onclick="toggleEditMode()" title="Toggle Edit Mode">
+            <i class="fas fa-edit"></i>
+        </button>
+        <button class="fab fab-print" onclick="printResume()" title="Print Resume">
+            <i class="fas fa-print"></i>
+        </button>
+        <button class="fab fab-download" onclick="downloadResume()" title="Download PDF">
+            <i class="fas fa-download"></i>
+        </button>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="profile-container">
+                <div class="profile-img" id="profileImg">
+                    <img src="images/profile.jpg" alt="Profile Picture">
+                </div>
+                <button class="profile-upload" onclick="document.getElementById('profileImageInput').click()">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="profileImageInput" accept="image/*" onchange="handleImageUpload(event, 'profile')" style="display: none;">
+            </div>
+            <h1 class="editable" onclick="editText(this)">Ajay Kumar</h1>
+            <p class="title editable" onclick="editText(this)">Power BI Developer | Business Intelligence Specialist</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="editable" onclick="editText(this)">E-4/70, Mukund Vihar, Karawal Nagar, Delhi-110094</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <a href="tel:+919999574797" class="editable" onclick="editText(this)">+91-9999574797</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:ajay-jha@hotmail.com" class="editable" onclick="editText(this)">ajay-jha@hotmail.com</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-linkedin"></i>
+                    <a href="https://www.linkedin.com/in/ajay-kumar-37820673/" target="_blank" class="editable" onclick="editText(this)">LinkedIn Profile</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Technical Skills -->
+                <section class="section animate-on-scroll">
+                    <h2><i class="fas fa-cogs"></i> Core Competencies</h2>
+                    
+                    <div class="skill-category">
+                        <h3>Technical Expertise</h3>
+                        <div class="skill-list">
+                            <span class="skill-tag">Power BI</span>
+                            <span class="skill-tag">Advanced DAX</span>
+                            <span class="skill-tag">SQL Server</span>
+                            <span class="skill-tag">SAP B1</span>
+                            <span class="skill-tag">SAP S/4HANA</span>
+                            <span class="skill-tag">BigQuery</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">ETL Automation</span>
+                            <span class="skill-tag">API Integration</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>Leadership & Strategy</h3>
+                        <div class="skill-list">
+                            <span class="skill-tag">Cross-functional Collaboration</span>
+                            <span class="skill-tag">Stakeholder Management</span>
+                            <span class="skill-tag">Digital Transformation</span>
+                            <span class="skill-tag">Project Management</span>
+                            <span class="skill-tag">Data Governance</span>
+                        </div>
+                    </div>
+
+                    <div class="skill-category">
+                        <h3>Industry Knowledge</h3>
+                        <div class="skill-list">
+                            <span class="skill-tag">Supply Chain Analytics</span>
+                            <span class="skill-tag">Financial Reporting</span>
+                            <span class="skill-tag">Sales Operations</span>
+                            <span class="skill-tag">Inventory Management</span>
+                            <span class="skill-tag">ERP Implementation</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Education -->
+                <section class="section animate-on-scroll">
+                    <h2><i class="fas fa-graduation-cap"></i> Education & Certifications</h2>
+                    
+                    <div class="education-item">
+                        <h4>Minor in Artificial Intelligence</h4>
+                        <div class="institution">IIT Ropar</div>
+                        <div class="year">Pursuing - 2024</div>
+                    </div>
+
+                    <div class="education-item">
+                        <h4>MBA, Operations</h4>
+                        <div class="institution">Sikkim Manipal University, New Delhi</div>
+                        <div class="year">2017</div>
+                    </div>
+
+                    <div class="education-item">
+                        <h4>BBA, Retail Operations</h4>
+                        <div class="institution">Sikkim Manipal University, New Delhi</div>
+                        <div class="year">2013</div>
+                    </div>
+
+                    <div class="education-item">
+                        <h4>Certified Retail Trade Management</h4>
+                        <div class="institution">YMCA, New Delhi</div>
+                        <div class="year">2010</div>
+                    </div>
+                </section>
+
+                <!-- Leadership Competencies -->
+                <section class="section animate-on-scroll">
+                    <h2><i class="fas fa-lightbulb"></i> Leadership Competencies</h2>
+                    <div class="skill-list">
+                        <span class="skill-tag">Strategic Vision</span>
+                        <span class="skill-tag">Stakeholder Engagement</span>
+                        <span class="skill-tag">Change Management</span>
+                        <span class="skill-tag">Innovation & Problem-Solving</span>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <!-- Executive Summary -->
+                <section class="section animate-on-scroll">
+                    <h2><i class="fas fa-user-circle"></i> Executive Summary</h2>
+                    <div class="summary">
+                        <p class="editable" onclick="editText(this)">Strategic Business Intelligence Professional with 17+ years of experience designing enterprise-scale analytics solutions and leading cross-functional initiatives. Expert in building BI infrastructure from scratch, managing multi-platform data ecosystems, and delivering measurable business impact through automated reporting frameworks across diverse industries.</p>
+                    </div>
+                </section>
+
+                <!-- Professional Experience -->
+                <section class="section animate-on-scroll">
+                    <h2><i class="fas fa-briefcase"></i> Professional Experience</h2>
+
+                    <div class="experience-item">
+                        <div class="job-header">
+                            <div>
+                                <h3 class="job-title">Senior Power BI Analyst | BI Solutions Lead (GT | MT | Finance)</h3>
+                                <div class="company">Manashlifestyle Pvt Ltd (Purplle.com | Faces Canada), Gurugram</div>
+                            </div>
+                            <div class="duration">Jul 2022 - Present</div>
+                        </div>
+                        <ul class="achievements">
+                            <li>Established organization's complete Business Intelligence function from scratch, building entire BI infrastructure and framework</li>
+                            <li>Architected comprehensive data integration platform connecting SAP B1, SAP S/4HANA, DMS, SFA, BA applications, SQL Server, and BigQuery</li>
+                            <li>Spearheaded DMS system implementation, resolving critical data inconsistency issues and ensuring seamless business continuity</li>
+                            <li>Built scalable dashboard suite (Sales Performance, Inventory Analysis, P&L Analytics, Supply Chain, Distributor OSA, Manning, Marketing Insights and many more) serving diverse user groups</li>
+                            <li>Designed automated ETL pipelines using Python and API integrations, eliminating 90% of manual data processing tasks</li>
+                            <li>Delivered real-time KPI monitoring for OSA%, Swiss%, order fulfillment, and call productivity metrics</li>
+                            <li>Mentored team members and business users, transforming organization's data-driven decision making culture</li>
+                        </ul>
+                    </div>
+
+                    <div class="experience-item">
+                        <div class="job-header">
+                            <div>
+                                <h3 class="job-title">IT Operations Manager (ERP & Analytics)</h3>
+                                <div class="company">Morepen Laboratories Ltd, Gurugram</div>
+                            </div>
+                            <div class="duration">Feb 2014 - Jul 2022</div>
+                        </div>
+                        <ul class="achievements">
+                            <li>Led ERP implementation (Microsoft Dynamics NAV) and managed IT operations team</li>
+                            <li>Designed comprehensive reporting framework using Power BI and SSRS for finance, operations, and executive dashboards</li>
+                            <li>Developed advanced DAX-based MIS reports with interactive visualizations and automated data refresh capabilities</li>
+                            <li>Implemented role-based security frameworks ensuring data governance compliance across departments</li>
+                        </ul>
+                    </div>
+
+                    <div class="experience-item">
+                        <div class="job-header">
+                            <div>
+                                <h3 class="job-title">Assistant Manager -- Sales & Operations</h3>
+                                <div class="company">Karghi Furnishing India Pvt Ltd, Faridabad</div>
+                            </div>
+                            <div class="duration">May 2011 - Feb 2014</div>
+                        </div>
+                        <ul class="achievements">
+                            <li>Managed ERP implementation project, coordinating with vendors and internal teams for successful go-live</li>
+                            <li>Led user training initiatives for 20+ employees across multiple locations</li>
+                            <li>Optimized inventory management and logistics operations through data-driven process improvements</li>
+                        </ul>
+                    </div>
+
+                    <div class="experience-item">
+                        <div class="job-header">
+                            <div>
+                                <h3 class="job-title">Senior Executive -- Operations</h3>
+                                <div class="company">Seasons Furnishing Ltd, New Delhi</div>
+                            </div>
+                            <div class="duration">May 2007 - May 2011</div>
+                        </div>
+                        <ul class="achievements">
+                            <li>Oversaw ERP operations ensuring system stability and transactional accuracy across business functions</li>
+                            <li>Managed cross-functional teams for sales approvals, financial workflows, and operational reporting</li>
+                            <li>Implemented standardized procedures improving operational efficiency</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Key Achievements -->
+                <section class="section animate-on-scroll">
+                    <h2><i class="fas fa-trophy"></i> Key Achievements</h2>
+                    <div class="key-achievements">
+                        <div class="achievement-grid">
+                            <div class="achievement-card">
+                                <h4>BI Foundation Builder</h4>
+                                <p>Established comprehensive BI infrastructure from scratch, creating scalable analytics capabilities that transformed organizational decision-making processes</p>
+                            </div>
+                            <div class="achievement-card">
+                                <h4>System Implementation Excellence</h4>
+                                <p>Managed critical DMS implementation ensuring zero data loss and seamless business continuity</p>
+                            </div>
+                            <div class="achievement-card">
+                                <h4>Process Automation</h4>
+                                <p>Achieved 90% reduction in manual reporting tasks through innovative automation solutions</p>
+                            </div>
+                            <div class="achievement-card">
+                                <h4>Stakeholder Management</h4>
+                                <p>Consistently delivered complex projects on time while maintaining strong business relationships</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Project Highlights -->
+                <section class="section animate-on-scroll">
+                    <div class="projects-header">
+                        <h2><i class="fas fa-project-diagram"></i> Project Highlights</h2>
+                        <button class="add-project-btn" onclick="openProjectModal()">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div class="project-grid" id="projectGrid">
+                        <!-- Projects will be dynamically added here -->
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProjectModal()">&times;</span>
+            <h2 id="modalTitle"><i class="fas fa-plus"></i> Add New Project</h2>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label for="projectTitle"><i class="fas fa-heading"></i> Project Title:</label>
+                    <input type="text" id="projectTitle" name="projectTitle" required placeholder="Enter project title...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="projectImage"><i class="fas fa-image"></i> Project Image:</label>
+                    <div class="image-upload-container">
+                        <div class="image-preview" id="projectImagePreview" onclick="document.getElementById('projectImageInput').click()">
+                            <div class="image-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div>Click to upload project image</div>
+                            </div>
+                            <button type="button" class="image-remove" onclick="removeProjectImage(event)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <input type="file" id="projectImageInput" accept="image/*" onchange="handleImageUpload(event, 'project')" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="projectDescription"><i class="fas fa-list"></i> Project Description:</label>
+                    <textarea id="projectDescription" name="projectDescription" required placeholder="Enter project details as bullet points, one per line...
+
+Example:
+• Developed comprehensive sales dashboard using Power BI
+• Implemented automated reporting system reducing manual effort by 80%
+• Created real-time KPI monitoring for business metrics"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save Project
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeProjectModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Text Edit Modal -->
+    <div id="textEditModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTextEditModal()">&times;</span>
+            <h2><i class="fas fa-edit"></i> Edit Text</h2>
+            <form id="textEditForm">
+                <div class="form-group">
+                    <label for="editText">Content:</label>
+                    <textarea id="editText" name="editText" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeTextEditModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let editMode = false;
+        let currentEditingProject = null;
+        let currentEditingElement = null;
+        let projectImageData = null;
+
+        // Initialize default projects
+        const defaultProjects = [
+            {
+                title: "Comprehensive BI Infrastructure Development",
+                description: [
+                    "Established organization's complete Business Intelligence function from scratch",
+                    "Architected data integration platform connecting SAP B1, SAP S/4HANA, DMS, SFA applications",
+                    "Built scalable dashboard suite serving Sales, P&L, Supply Chain, and Marketing teams",
+                    "Implemented automated ETL pipelines eliminating 90% manual data processing"
+                ],
+                image: null
+            },
+            {
+                title: "Advanced Dashboard Suite for Sales & Operations",
+                description: [
+                    "Designed dynamic dashboards for Sales Performance, Inventory Analysis, and P&L Analytics",
+                    "Created real-time KPI monitoring for OSA%, Swiss%, order fulfillment metrics",
+                    "Implemented role-based security ensuring data governance compliance",
+                    "Delivered stakeholder training transforming data-driven decision making culture"
+                ],
+                image: null
+            },
+            {
+                title: "DMS System Implementation & Data Integration",
+                description: [
+                    "Spearheaded critical DMS system implementation ensuring zero data loss",
+                    "Resolved complex data inconsistency issues maintaining business continuity",
+                    "Integrated multi-platform data ecosystem connecting SQL Server and BigQuery",
+                    "Automated Python-based API integrations for seamless data flow"
+                ],
+                image: null
+            }
+        ];
+
+        // Initialize the resume
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeProjects();
+            initializeAnimations();
+            showNotification('Welcome! Your modern resume is ready. Click the edit button to customize.');
+        });
+
+        // Initialize default projects
+        function initializeProjects() {
+            const projectGrid = document.getElementById('projectGrid');
+            defaultProjects.forEach(project => {
+                addProjectToGrid(project);
+            });
+        }
+
+        // Initialize scroll animations
+        function initializeAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            editMode = !editMode;
+            const container = document.querySelector('.container');
+            const editBtn = document.querySelector('.fab-edit');
+            
+            if (editMode) {
+                container.classList.add('edit-mode');
+                editBtn.style.background = 'var(--secondary-gradient)';
+                editBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                editBtn.title = 'View Mode';
+                showNotification('Edit mode enabled! Click elements to edit or use action buttons.');
+            } else {
+                container.classList.remove('edit-mode');
+                editBtn.style.background = 'var(--primary-gradient)';
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.title = 'Edit Mode';
+                showNotification('Edit mode disabled. Resume is now in view-only mode.');
+            }
+
+            updateSectionToggles();
+        }
+
+        function updateSectionToggles() {
+            document.querySelectorAll('.section-toggle-btn').forEach(btn => {
+                btn.style.display = editMode ? 'flex' : 'none';
+            });
+        }
+        
+        // Handle image uploads
+        function handleImageUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                showNotification('Please select a valid image file.', 'error');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('Image size should be less than 5MB.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                
+                if (type === 'profile') {
+                    const profileImg = document.getElementById('profileImg');
+                    profileImg.innerHTML = `<img src="${imageData}" alt="Profile Picture">`;
+                    showNotification('Profile image updated successfully!');
+                } else if (type === 'project') {
+                    const preview = document.getElementById('projectImagePreview');
+                    preview.innerHTML = `
+                        <img src="${imageData}" alt="Project Image">
+                        <button type="button" class="image-remove" onclick="removeProjectImage(event)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    projectImageData = imageData;
+                    showNotification('Project image uploaded successfully!');
+                }
+            };
+            
+            reader.onerror = function() {
+                showNotification('Error reading the image file.', 'error');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Remove project image
+        function removeProjectImage(event) {
+            event.stopPropagation();
+            const preview = document.getElementById('projectImagePreview');
+            preview.innerHTML = `
+                <div class="image-placeholder">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div>Click to upload project image</div>
+                </div>
+            `;
+            projectImageData = null;
+            showNotification('Project image removed.');
+        }
+
+        // Text editing functions
+        function editText(element) {
+            if (!editMode) return;
+            
+            currentEditingElement = element;
+            const modal = document.getElementById('textEditModal');
+            const textarea = document.getElementById('editText');
+            
+            textarea.value = element.textContent.trim();
+            modal.style.display = 'block';
+            
+            setTimeout(() => {
+                textarea.focus();
+                textarea.select();
+            }, 100);
+        }
+
+        function closeTextEditModal() {
+            document.getElementById('textEditModal').style.display = 'none';
+            currentEditingElement = null;
+        }
+
+        // Handle text edit form submission
+        document.getElementById('textEditForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentEditingElement) return;
+            
+            const newText = document.getElementById('editText').value.trim();
+            if (!newText) {
+                showNotification('Please enter some text.', 'error');
+                return;
+            }
+            
+            currentEditingElement.textContent = newText;
+            
+            // Update href attributes for links
+            if (currentEditingElement.tagName === 'A') {
+                if (newText.includes('@')) {
+                    currentEditingElement.href = `mailto:${newText}`;
+                } else if (newText.includes('+') || newText.match(/\d{10}/)) {
+                    currentEditingElement.href = `tel:${newText}`;
+                }
+            }
+            
+            closeTextEditModal();
+            showNotification('Text updated successfully!');
+        });
+
+        // Project management functions
+        function openProjectModal(project = null) {
+            const modal = document.getElementById('projectModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('projectForm');
+            
+            if (project) {
+                // Edit mode
+                currentEditingProject = project;
+                modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Project';
+                
+                const projectCard = project.closest('.project-card');
+                const title = projectCard.querySelector('h4').textContent;
+                const listItems = Array.from(projectCard.querySelectorAll('li')).map(li => li.textContent);
+                const img = projectCard.querySelector('.project-image img');
+                
+                document.getElementById('projectTitle').value = title;
+                document.getElementById('projectDescription').value = listItems.join('\n');
+                
+                // Handle existing image
+                const preview = document.getElementById('projectImagePreview');
+                if (img) {
+                    preview.innerHTML = `
+                        <img src="${img.src}" alt="Project Image">
+                        <button type="button" class="image-remove" onclick="removeProjectImage(event)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    projectImageData = img.src;
+                } else {
+                    preview.innerHTML = `
+                        <div class="image-placeholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div>Click to upload project image</div>
+                        </div>
+                    `;
+                    projectImageData = null;
+                }
+            } else {
+                // Add mode
+                currentEditingProject = null;
+                modalTitle.innerHTML = '<i class="fas fa-plus"></i> Add New Project';
+                form.reset();
+                
+                const preview = document.getElementById('projectImagePreview');
+                preview.innerHTML = `
+                    <div class="image-placeholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div>Click to upload project image</div>
+                    </div>
+                `;
+                projectImageData = null;
+            }
+            
+            modal.style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('projectTitle').focus();
+            }, 100);
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').style.display = 'none';
+            currentEditingProject = null;
+            projectImageData = null;
+        }
+
+        function editProject(button) {
+            openProjectModal(button);
+        }
+
+        function deleteProject(button) {
+            const projectCard = button.closest('.project-card');
+            const projectTitle = projectCard.querySelector('h4').textContent;
+            
+            if (confirm(`Are you sure you want to delete the project "${projectTitle}"?`)) {
+                projectCard.style.transform = 'scale(0) rotate(10deg)';
+                projectCard.style.opacity = '0';
+                setTimeout(() => {
+                    projectCard.remove();
+                    showNotification('Project deleted successfully!');
+                }, 400);
+            }
+        }
+
+        // Add project to grid
+        function addProjectToGrid(projectData) {
+            const projectGrid = document.getElementById('projectGrid');
+            const newProject = document.createElement('div');
+            newProject.className = 'project-card';
+            newProject.style.transform = 'scale(0) rotate(-10deg)';
+            newProject.style.opacity = '0';
+            
+            const imageSection = projectData.image ? 
+                `<div class="project-image-container has-image">
+                    <div class="project-image has-image">
+                        <img src="${projectData.image}" alt="Project Image">
+                        <button class="project-image-upload-btn" onclick="uploadProjectImage(this)" title="Change Image">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                </div>` :
+                `<div class="project-image-container no-image">
+                    <button class="project-upload-icon" onclick="uploadProjectImage(this)" title="Add Project Image">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>`;
+            
+            newProject.innerHTML = `
+                <div class="project-header">
+                    <h4>${projectData.title}</h4>
+                    <div class="project-actions">
+                        <button class="edit-project" onclick="editProject(this)" title="Edit Project">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-project" onclick="deleteProject(this)" title="Delete Project">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                ${imageSection}
+                <ul>
+                    ${projectData.description.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            `;
+            
+            projectGrid.appendChild(newProject);
+            
+            // Animate in
+            setTimeout(() => {
+                newProject.style.transform = 'scale(1) rotate(0deg)';
+                newProject.style.opacity = '1';
+                newProject.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            }, 100);
+        }
+
+        // Upload project image function
+        function uploadProjectImage(button) {
+            if (!editMode) return;
+            
+            const projectCard = button.closest('.project-card');
+            currentEditingProject = button; // Store reference for image upload
+            
+            // Create file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Validate file
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please select a valid image file.', 'error');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image size should be less than 5MB.', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    const imageContainer = projectCard.querySelector('.project-image-container');
+                    
+                    // Update the image container
+                    imageContainer.className = 'project-image-container has-image';
+                    imageContainer.innerHTML = `
+                        <div class="project-image has-image">
+                            <img src="${imageData}" alt="Project Image">
+                            <button class="project-image-upload-btn" onclick="uploadProjectImage(this)" title="Change Image">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    showNotification('Project image uploaded successfully!');
+                };
+                
+                reader.onerror = function() {
+                    showNotification('Error reading the image file.', 'error');
+                };
+                
+                reader.readAsDataURL(file);
+                
+                // Clean up
+                document.body.removeChild(fileInput);
+            };
+            
+            document.body.appendChild(fileInput);
+            fileInput.click();
+        }
+
+        // Handle project form submission
+        document.getElementById('projectForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('projectTitle').value.trim();
+            const description = document.getElementById('projectDescription').value.trim();
+            
+            if (!title || !description) {
+                showNotification('Please fill in all required fields.', 'error');
+                return;
+            }
+            
+            const descriptionItems = description.split('\n').filter(item => item.trim() !== '').map(item => item.trim().replace(/^[•\-\*]\s*/, ''));
+            
+            if (descriptionItems.length === 0) {
+                showNotification('Please provide at least one project detail.', 'error');
+                return;
+            }
+            
+            if (currentEditingProject) {
+                // Update existing project
+                const projectCard = currentEditingProject.closest('.project-card');
+                projectCard.querySelector('h4').textContent = title;
+                
+                // Update image
+                const imageContainer = projectCard.querySelector('.project-image-container');
+                if (projectImageData) {
+                    imageContainer.className = 'project-image-container has-image';
+                    imageContainer.innerHTML = `
+                        <div class="project-image has-image">
+                            <img src="${projectImageData}" alt="Project Image">
+                            <button class="project-image-upload-btn" onclick="uploadProjectImage(this)" title="Change Image">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    imageContainer.className = 'project-image-container no-image';
+                    imageContainer.innerHTML = `
+                        <button class="project-upload-icon" onclick="uploadProjectImage(this)" title="Add Project Image">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    `;
+                }
+                
+                const ul = projectCard.querySelector('ul');
+                ul.innerHTML = descriptionItems.map(item => `<li>${item}</li>`).join('');
+                
+                // Add update animation
+                projectCard.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    projectCard.style.transform = 'scale(1)';
+                }, 200);
+                
+                showNotification('Project updated successfully!');
+            } else {
+                // Add new project
+                const newProjectData = {
+                    title: title,
+                    description: descriptionItems,
+                    image: projectImageData
+                };
+                
+                addProjectToGrid(newProjectData);
+                showNotification('New project added successfully!');
+            }
+            
+            closeProjectModal();
+        });
+
+        // Utility functions
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        function printResume() {
+            // Temporarily disable edit mode for printing
+            const wasEditMode = editMode;
+            if (editMode) {
+                toggleEditMode();
+            }
+            
+            setTimeout(() => {
+                window.print();
+                if (wasEditMode) {
+                    setTimeout(() => toggleEditMode(), 100);
+                }
+            }, 100);
+        }
+
+        function downloadResume() {
+            showNotification('PDF download feature coming soon! Use Print to save as PDF for now.');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const projectModal = document.getElementById('projectModal');
+            const textModal = document.getElementById('textEditModal');
+            
+            if (event.target === projectModal) {
+                closeProjectModal();
+            }
+            if (event.target === textModal) {
+                closeTextEditModal();
+            }
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+P for print
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                printResume();
+            }
+            
+            // ESC to close modals
+            if (e.key === 'Escape') {
+                closeProjectModal();
+                closeTextEditModal();
+            }
+            
+            // Ctrl+E to toggle edit mode
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                toggleEditMode();
+            }
+        });
+
+        // Add click-to-copy functionality for contact items
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactLinks = document.querySelectorAll('.contact-item a');
+            contactLinks.forEach(link => {
+                if (link.getAttribute('href').startsWith('mailto:') || link.getAttribute('href').startsWith('tel:')) {
+                    link.addEventListener('click', function(e) {
+                        if (!editMode) {
+                            e.preventDefault();
+                            const text = this.textContent;
+                            navigator.clipboard.writeText(text).then(() => {
+                                showNotification(`${text} copied to clipboard!`);
+                            }).catch(() => {
+                                showNotification('Failed to copy to clipboard', 'error');
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // Add hover effects for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Skill tags interactive effects
+            const skillTags = document.querySelectorAll('.skill-tag');
+            skillTags.forEach(tag => {
+                tag.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px) scale(1.05)';
+                });
+                tag.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Add parallax effect to header
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const header = document.querySelector('.header');
+                if (header) {
+                    header.style.transform = `translateY(${scrolled * 0.5}px)`;
+                }
+            });
+        });
+
+        // Auto-save functionality (could be extended to localStorage)
+        function autoSave() {
+            // This could be implemented to save changes to localStorage
+           
+
+            // For now, it maintains state during the session
+        }
+
+        // Performance optimization - lazy load images
+        function lazyLoadImages() {
+            const images = document.querySelectorAll('img[data-src]');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('loading');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            images.forEach(img => imageObserver.observe(img));
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', lazyLoadImages);
+    </script>
+</body>
+</html>
